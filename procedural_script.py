@@ -184,10 +184,10 @@ def render_callback(
   frequency = 440
   instance = ObjCInstance(inRefCon)
   theta = instance.theta
-  out = (instance.theta)
   theta_increment = 2.0 * pi * frequency / sampleRate
   
-  buffer = ctypes.cast(ioData[0].mBuffers[0].mData, ctypes.POINTER(ctypes.c_float * inNumberFrames)).contents
+  buffer = ctypes.cast(ioData[0].mBuffers[0].mData,
+  ctypes.POINTER(ctypes.c_float * inNumberFrames)).contents
   
   for frame in range(inNumberFrames):
     buffer[frame] = math.sin(theta) * amplitude
