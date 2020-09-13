@@ -6,6 +6,12 @@
 [Pythonista3](http://omz-software.com/pythonista/) Script !
 
 
+
+ソースをコピペすれば、そのまま動くよ 🥳
+
+
+
+
 ## Referenced site
 
 - [Real time audio buffer synth/Real time image smudge tool](https://forum.omz-software.com/topic/5155/real-time-audio-buffer-synth-real-time-image-smudge-tool)

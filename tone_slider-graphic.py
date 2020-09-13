@@ -3,8 +3,6 @@ from objc_util import UIApplication, ObjCInstance, c
 import ctypes
 import math
 
-import time
-import sys
 import ui, editor
 
 
