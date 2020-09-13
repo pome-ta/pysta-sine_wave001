@@ -1,10 +1,8 @@
-from objc_util import UIApplication
-from objc_util import c, ObjCInstance
+from objc_util import UIApplication, ObjCInstance, c
 
 import ctypes
 import math
 
-from pprint import pprint
 import time
 import sys
 import ui, editor
@@ -34,16 +32,16 @@ kAudioUnitManufacturer_Apple = int.from_bytes(
 
 # --- AudioComponentFindNext
 AudioComponentFindNext = c.AudioComponentFindNext
-AudioComponentFindNext.argtypes = [
+AudioComponentFindNext.argtypes = (
   ctypes.c_void_p, ctypes.POINTER(AudioComponentDescription)
-]
+)
 AudioComponentFindNext.restype = ctypes.c_void_p
 # --- AudioComponentFindNext */
 
 # --- AudioComponentInstanceNew
 OSStatus = ctypes.c_int32
 AudioComponentInstanceNew = c.AudioComponentInstanceNew
-AudioComponentInstanceNew.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+AudioComponentInstanceNew.argtypes = (ctypes.c_void_p, ctypes.c_void_p)
 AudioComponentInstanceNew.restype = OSStatus
 # --- AudioComponentInstanceNew */
 
@@ -58,7 +56,7 @@ class AudioTimeStampFlags(ctypes.c_uint32):
   kAudioTimeStampSMPTETimeValid = (1 << 4)
   kAudioTimeStampSampleHostTimeValid = (
     kAudioTimeStampSampleTimeValid | kAudioTimeStampHostTimeValid)
-# todo: `from enum import IntFlag` 使える？
+
 class SMPTETimeType(ctypes.c_uint32):
   kSMPTETimeType24 = 0
   kSMPTETimeType25 = 1
@@ -77,34 +75,34 @@ class SMPTETimeFlags(ctypes.c_uint32):
   kSMPTETimeValid = (1 << 0)
   kSMPTETimeRunning = (1 << 1)
 class SMPTETime(ctypes.Structure):
-  _fields_ = [
+  _fields_ = (
     ('mSubframes', ctypes.c_int16),
     ('mSubframeDivisor', ctypes.c_int16), ('mCounter', ctypes.c_uint32),
     ('mType', SMPTETimeType), ('mFlags', SMPTETimeFlags),
     ('mHours', ctypes.c_int16), ('mMinutes', ctypes.c_int16),
     ('mSeconds', ctypes.c_int16),
     ('mFrames', ctypes.c_int16)
-    ]
+    )
 class AudioTimeStamp(ctypes.Structure):
-  _fields_ = [
+  _fields_ = (
     ('mSampleTime', ctypes.c_double),
     ('mHostTime', ctypes.c_int64),
     ('mRateScalar', ctypes.c_double),
     ('mWordClockTime', ctypes.c_uint64), ('mSMPTETime', SMPTETime),
     ('mFlags', AudioTimeStampFlags),
     ('mReserved', ctypes.c_uint32)
-    ]
+    )
 class AudioBuffer(ctypes.Structure):
-  _fields_ = [
+  _fields_ = (
     ('mNumberChannels', ctypes.c_uint32),
     ('mDataByteSize', ctypes.c_uint32),
     ('mData', ctypes.c_void_p)
-    ]
+    )
 class AudioBufferList(ctypes.Structure):
-  _fields_ = [
+  _fields_ = (
     ('mNumberBuffers', ctypes.c_uint32), ('mBuffers',AudioBuffer * 1)
-    ]
-# todo: よくわかってない
+    )
+
 def render_callback_prototype(
     inRefCon: ctypes.c_void_p,
     ioActionFlags: ctypes.POINTER(AudioUnitRenderActionFlags),
@@ -123,17 +121,17 @@ AURenderCallback = ctypes.CFUNCTYPE(
   )
 
 class AURenderCallbackStruct(ctypes.Structure):
-  _fields_ = [
+  _fields_ = (
     ('inputProc', AURenderCallback),
     ('inputProcRefCon',ctypes.c_void_p)
-    ]
+    )
 # --- AURenderCallbackStruct */
 
 # --- AudioUnitSetProperty
 AudioUnitSetProperty = c.AudioUnitSetProperty
-AudioUnitSetProperty.argtypes = [
+AudioUnitSetProperty.argtypes = (
   ctypes.c_void_p, ctypes.c_uint32, ctypes.c_uint32, ctypes.c_uint32, ctypes.c_void_p, ctypes.c_uint32
-]
+)
 AudioUnitSetProperty.restype = OSStatus
 kAudioUnitProperty_SetRenderCallback = 23
 kAudioUnitScope_Input = 1
@@ -170,7 +168,6 @@ AudioComponentInstanceDispose.restype = OSStatus
 # --- AudioComponentInstanceDispose */
 
 
-
 pi = math.pi
 def render_callback(
     inRefCon: ctypes.c_void_p,
@@ -186,7 +183,6 @@ def render_callback(
   frequency = instance.frequency
   theta = instance.theta
   theta_increment = 2.0 * pi * frequency / sampleRate
-  
   buffer = ctypes.cast(ioData[0].mBuffers[0].mData,
   ctypes.POINTER(ctypes.c_float * inNumberFrames)).contents
   
@@ -198,7 +194,6 @@ def render_callback(
   instance.buffer = buffer
   instance.theta = theta
   return 0
-
 
 
 class PyAudio:
@@ -256,44 +251,41 @@ class View(ui.View):
     line = ui.Path()
     line.line_width = 2
     self.segment = len(self.instance.buffer)
-    amp = self.height / 4
-    # todo: 一旦 1024 で（あとで間引く）
+    amp = self.height / 8
     for n, b in enumerate(self.instance.buffer):
       x = (n / (self.segment -1)) *self.width
       y = amp *b + self.height / 2
       if n: line.line_to(x, y)
       else: line.move_to(x, y)
     line.stroke()
-    
   
   def update(self):
     self.set_needs_display()
   
   def setup_ui(self):
-    self.tone_label = ui.Label()
-    self.tone_label.font = ('DIN Alternate', 64)
-    self.tone_label.alignment = 1
-    self.tone_label.text = f'{int(self.instance.frequency):03}'
-    self.tone_label.bg_color = 'maroon'
-    self.tone_slider = ui.Slider()
-    self.tone_slider.value = 0.5
-    self.tone_slider.action = self.set_frequency
-    self.add_subview(self.tone_label)
-    self.add_subview(self.tone_slider)
+    self.frequency_label = ui.Label()
+    self.frequency_label.font = ('DIN Alternate', 64)
+    self.frequency_label.alignment = 1
+    self.frequency_label.text = f'{int(self.instance.frequency):03}'
+    self.frequency_label.bg_color = 'maroon'
+    self.frequency_slider = ui.Slider()
+    self.frequency_slider.value = 0.5
+    self.frequency_slider.action = self.set_frequency
+    self.add_subview(self.frequency_label)
+    self.add_subview(self.frequency_slider)
     
   def layout(self):
     _x, _y, _w, _h = self.frame
-    # todo: 変数名
-    self.tone_label.x = (_w / 2) - (self.tone_label.width / 2)
-    self.tone_label.y = (_h / 3)
+    self.frequency_label.x = (_w / 2) - (self.frequency_label.width / 2)
+    self.frequency_label.y = (_h / 3)
     
-    self.tone_slider.width = sw = _w * 0.8
-    self.tone_slider.x = (_w / 2) - (sw / 2)
-    self.tone_slider.y = _h / 2
+    self.frequency_slider.width = sw = _w * 0.92
+    self.frequency_slider.x = (_w / 2) - (sw / 2)
+    self.frequency_slider.y = (_h / 2) - (self.frequency_slider.height / 2)
     
   def set_frequency(self, sender):
     self.instance.frequency = sender.value * 880
-    self.tone_label.text = f'{int(self.instance.frequency):03}'
+    self.frequency_label.text = f'{int(self.instance.frequency):03}'
     
   @ui.in_background
   def will_close(self):
@@ -306,6 +298,5 @@ editor.present_themed(
   view,
   theme_name='Theme09_Editorial',
   style='fullscreen',
-  #hide_title_bar=True,
   orientations=['portrait'])
 
