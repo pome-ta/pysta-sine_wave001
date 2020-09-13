@@ -36,13 +36,15 @@ from objc_util import c
 - `&hoge` のやつ
 
   - 定義時は`POINTER`
-	- 呼び出す時は、`byref`
+  - 呼び出す時は、`byref`
+
 なのかな？
 
 
 
 #### Pythonista
 
+```
 AudioComponent defaultOutput = AudioComponentFindNext(NULL, &defaultOutputDescription);
 
 ```
