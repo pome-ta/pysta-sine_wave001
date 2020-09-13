@@ -53,7 +53,14 @@ AudioComponentFindNext.argtypes = (
 AudioComponentFindNext.restype = ctypes.c_void_p
 
 ```
+def AudioComponentFindNext(inComponent, inDesc):
+  _AudioComponentFindNext = c.AudioComponentFindNext
+  _AudioComponentFindNext.restype = ctypes.c_void_p
+  _AudioComponentFindNext.argtypes = (ctypes.c_void_p, ctypes.POINTER(AudioComponentDescription))
+  return _AudioComponentFindNext(inComponent, inDesc)
+```
 
+```
 
 ```
 defaultOutput = AudioComponentFindNext(None, ctypes.byref(self.cd))
