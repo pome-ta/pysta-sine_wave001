@@ -57,8 +57,8 @@ class AudioTimeStampFlags(ctypes.c_uint32):
   kAudioTimeStampRateScalarValid = (1 << 2)
   kAudioTimeStampWordClockTimeValid = (1 << 3)
   kAudioTimeStampSMPTETimeValid = (1 << 4)
-  kAudioTimeStampSampleHostTimeValid = (kAudioTimeStampSampleTimeValid \
- | kAudioTimeStampHostTimeValid)
+  kAudioTimeStampSampleHostTimeValid = (kAudioTimeStampSampleTimeValid
+                                        | kAudioTimeStampHostTimeValid)
 
 
 # todo: `from enum import IntFlag` 使える？
@@ -140,8 +140,10 @@ AURenderCallback = ctypes.CFUNCTYPE(AURenderCallbackargs[-1],
 
 
 class AURenderCallbackStruct(ctypes.Structure):
-  _fields_ = [('inputProc', AURenderCallback),
-              ('inputProcRefCon', ctypes.c_void_p)]
+  _fields_ = [
+    ('inputProc', AURenderCallback),
+    ('inputProcRefCon', ctypes.c_void_p),
+  ]
 
 
 # --- AURenderCallbackStruct */
