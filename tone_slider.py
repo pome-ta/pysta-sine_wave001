@@ -14,10 +14,13 @@ OSType = ctypes.c_uint32
 
 
 class AudioComponentDescription(ctypes.Structure):
-  _fields_ = [('componentType', OSType), ('componentSubType', OSType),
-              ('componentManufacturer', OSType),
-              ('componentFlags', ctypes.c_uint32),
-              ('componentFlagsMask', ctypes.c_uint32)]
+  _fields_ = [
+    ('componentType', OSType),
+    ('componentSubType', OSType),
+    ('componentManufacturer', OSType),
+    ('componentFlags', ctypes.c_uint32),
+    ('componentFlagsMask', ctypes.c_uint32),
+  ]
 
 
 # --- AudioComponentDescription */
@@ -54,8 +57,8 @@ class AudioTimeStampFlags(ctypes.c_uint32):
   kAudioTimeStampRateScalarValid = (1 << 2)
   kAudioTimeStampWordClockTimeValid = (1 << 3)
   kAudioTimeStampSMPTETimeValid = (1 << 4)
-  kAudioTimeStampSampleHostTimeValid = (kAudioTimeStampSampleTimeValid
-                                        | kAudioTimeStampHostTimeValid)
+  kAudioTimeStampSampleHostTimeValid = (kAudioTimeStampSampleTimeValid \
+ | kAudioTimeStampHostTimeValid)
 
 
 # todo: `from enum import IntFlag` 使える？
@@ -81,29 +84,44 @@ class SMPTETimeFlags(ctypes.c_uint32):
 
 
 class SMPTETime(ctypes.Structure):
-  _fields_ = [('mSubframes', ctypes.c_int16),
-              ('mSubframeDivisor', ctypes.c_int16),
-              ('mCounter', ctypes.c_uint32), ('mType', SMPTETimeType),
-              ('mFlags', SMPTETimeFlags), ('mHours', ctypes.c_int16),
-              ('mMinutes', ctypes.c_int16), ('mSeconds', ctypes.c_int16),
-              ('mFrames', ctypes.c_int16)]
+  _fields_ = [
+    ('mSubframes', ctypes.c_int16),
+    ('mSubframeDivisor', ctypes.c_int16),
+    ('mCounter', ctypes.c_uint32),
+    ('mType', SMPTETimeType),
+    ('mFlags', SMPTETimeFlags),
+    ('mHours', ctypes.c_int16),
+    ('mMinutes', ctypes.c_int16),
+    ('mSeconds', ctypes.c_int16),
+    ('mFrames', ctypes.c_int16),
+  ]
 
 
 class AudioTimeStamp(ctypes.Structure):
-  _fields_ = [('mSampleTime', ctypes.c_double), ('mHostTime', ctypes.c_int64),
-              ('mRateScalar', ctypes.c_double),
-              ('mWordClockTime', ctypes.c_uint64), ('mSMPTETime', SMPTETime),
-              ('mFlags', AudioTimeStampFlags), ('mReserved', ctypes.c_uint32)]
+  _fields_ = [
+    ('mSampleTime', ctypes.c_double),
+    ('mHostTime', ctypes.c_int64),
+    ('mRateScalar', ctypes.c_double),
+    ('mWordClockTime', ctypes.c_uint64),
+    ('mSMPTETime', SMPTETime),
+    ('mFlags', AudioTimeStampFlags),
+    ('mReserved', ctypes.c_uint32),
+  ]
 
 
 class AudioBuffer(ctypes.Structure):
-  _fields_ = [('mNumberChannels', ctypes.c_uint32),
-              ('mDataByteSize', ctypes.c_uint32), ('mData', ctypes.c_void_p)]
+  _fields_ = [
+    ('mNumberChannels', ctypes.c_uint32),
+    ('mDataByteSize', ctypes.c_uint32),
+    ('mData', ctypes.c_void_p),
+  ]
 
 
 class AudioBufferList(ctypes.Structure):
-  _fields_ = [('mNumberBuffers', ctypes.c_uint32),
-              ('mBuffers', AudioBuffer * 1)]
+  _fields_ = [
+    ('mNumberBuffers', ctypes.c_uint32),
+    ('mBuffers', AudioBuffer * 1),
+  ]
 
 
 # todo: よくわかってない
